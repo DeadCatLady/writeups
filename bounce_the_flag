@@ -1,0 +1,35 @@
+NAME: bounce_the_flag
+CATEGORY: web
+POINTS: 100
+DOWNLOAD LINK:
+
+[http://chal.ctf-league.osusec.org/bounce_the_flag.zip](http://chal.ctf-league.osusec.org/bounce_the_flag.zip)
+
+ACCESS:
+
+[http://bounce_the_flag.ctf-league.osusec.org/](http://bounce_the_flag.ctf-league.osusec.org/)
+
+DESCRIPTION: Let's kick things off with one of my favorite classic 
+games: Bounce the Flag! Bounce the flag is an immersive hyper-realistic 
+gaming experience that involves bouncing a flag on a green rectangle. 
+One of Bounce the Flag's most celebrated competitors, Mr. Flag once 
+managed a score of 31337 points in a single round. No one knows how he 
+did it - not even Mr. Flag himself, because he has amnesia and he 
+forgot... He also forgot the password to his account... Maybe you can 
+help him out?
+
+Helpful tools:
+
+[https://reqbin.com/](https://reqbin.com/)
+
+[https://www.sqltutorial.org/sql-cheat-sheet/](https://www.sqltutorial.org/sql-cheat-sheet/)
+
+Write up: 
+
+The link given takes the user to a website with a game on it. Its a basic game where the user just has to bounce the flag many times. Upon losing the game, the user will be prompted to login with a username and password field. The hint of `bounce_the_flag` includes the objective of hacking into Mr. Flag’s account to get the flag. 
+
+To complete the `bounce_the_flag` challenge, the competitor must open up the inspect element tool, and manually set the score to `1337`, and from there can use an SQL injection in the password section of the form. Typing `Mr. Flag` as the username makes sense for the challenge since the objective is to get into this account. 
+
+In the password field is susceptible to SQL injections, and will return interesting errors as different attempts are made, which leads to a hint about changing the score to `31337`. 
+
+The challenge also provided the code for the challenge. The sql file shows the structure of the database. So, entering `' union select username, password from users --` in the password field will allow the competitor to access Mr.Flag’s account and see the password as `osu{Py7h0n_F_s7r1n9S_4Re_8E4u71FuL_4ND_4M421N9}`.
