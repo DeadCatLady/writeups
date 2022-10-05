@@ -1,0 +1,141 @@
+NAME: popquiz
+CATEGORY: rev
+POINTS: 150
+DOWNLOAD LINK:
+
+[http://chal.ctf-league.osusec.org/popquiz](http://chal.ctf-league.osusec.org/popquiz)
+
+ACCESS: nc chal.ctf-league.osusec.org 31300
+DESCRIPTION: Geez, I feel these quizzes I keep getting are completely arbitrary.  Could you help me pass? (Hint: use Ghidra to reverse engineer this program!)
+
+Hint:
+
+Here are some commands that might be helpful for the challenge
+`strace`
+
+`ltrace`
+
+`file`
+
+**This binary asks the user three questions:**
+
+Question 1: What am I thinking of?
+
+```jsx
+/* Ghidra output */
+bool question_1(void)
+
+{
+  long in_FS_OFFSET;
+  int input;
+  int local_14;
+  long local_10;
+  
+  local_10 = *(long *)(in_FS_OFFSET + 0x28);
+  local_14 = 0x2325;   /* This number is translated from hex to decimal 8997 */
+  printf("What number am I thinking of? ");
+  __isoc99_scanf(&DAT_00100e27,&input);
+  if (local_10 != *(long *)(in_FS_OFFSET + 0x28)) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return local_14 == input;
+}in the source code has a variable assigned to 0x2325, and it will compare in the input of the user to this hard coded number
+```
+
+The variable `local_14` is assigned to the hex value `0x2325`, converting it to decimal yields the number `8997`. In the return statement of the function `question_1` the input of the user is compared to the variable `local_14`, which as stated earlier has the decimal value of `8997`, this will be the answer to the first question. 
+
+Question 2: Gimme some characters:
+
+```jsx
+/* Ghidra output */
+
+bool question_2(void)
+
+{
+  long in_FS_OFFSET;
+  undefined4 local_14;
+  long local_10;
+  
+  local_10 = *(long *)(in_FS_OFFSET + 0x28);
+  printf("Gimme some characters: ");
+  local_14 = 0;
+  __isoc99_scanf("\n%c%c%c%c",&local_14,(long)&local_14 + 1,(long)&local_14 + 2,(long)&local_14 + 3)
+  ; /* The four %c show the input is expecting four characters */
+  if (local_10 != *(long *)(in_FS_OFFSET + 0x28)) {
+                    /* WARNING: Subroutine does not return */
+    __stack_chk_fail();
+  }
+  return (int)local_14._3_1_ + (int)(char)local_14 + (int)local_14._1_1_ + (int)local_14._2_1_ ==
+         0x1a0; /* The return statement is comparing all imputs to 0x1a0 */ 
+}
+```
+
+This takes 4 characters, and reads into `local_14`. You can see what the code is comparing it to, and can see that these are `hhhh`. 
+
+Question 3: ???
+
+```jsx
+/* Ghidra output */
+
+if ((sVar3 & 1) == 0) { /* This line is specifically looking for even numbers. */
+if (iVar2 < 4) {
+uVar4 = 0;
+}
+```
+
+The input needs to be even, this can be seen because of the `(var & 1)==0.` This statement will use an `AND` statement to compare bits, requiring an even number to pass this if-statement. 
+
+```jsx
+/* Ghidra output */
+
+else {
+      for (local_128 = 1; iVar1 = iVar2 / 2, local_128 < iVar2 / 2; local_128 = local_128 + 1) {
+        if (*(char *)((long)&local_118 + (long)local_128) <=
+            *(char *)((long)&local_118 + (long)(local_128 + -1))) {
+          uVar4 = 0;
+          goto LAB_00100baf;
+        }
+      }
+```
+
+The above for loop only goes through half the input, and compares the previous number to the next, and will need the previous number to be smaller than the current number; thus requiring half the input to be ascending. 
+
+```jsx
+/* Ghidra output */
+
+do {
+        local_124 = iVar1 + 1;
+        if (iVar2 <= local_124) {
+          uVar4 = 1;
+          goto LAB_00100baf;
+        }
+        lVar5 = (long)iVar1;
+        iVar1 = local_124;
+      } while (*(char *)((long)&local_118 + (long)local_124) < *(char *)((long)&local_118 + lVar5));
+      uVar4 = 0;
+    }
+
+```
+
+The second half of the input is comparing the previous number to the current number, and will require the previous number to be larger than the current number. 
+
+All together, this will require a ‘mountain number’, and example of this would be 123321. 
+
+**Conclusion:**
+
+After entering the above values the flag will be : `osu{e@s13r_th@n_ph21x_s3r13s}`
+
+```bash
+$ nc chal.ctf-league.osusec.org 31300
+1
+POP QUIZ TIME! Can you solve these challenging questions?
+What number am I thinking of? 8997
+
+Gimme some characters: hhhh
+???
+123321
+osu{e@s13r_th@n_ph21x_s3r13s}
+```
+
+Thank you for reading this.
