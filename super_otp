@@ -1,0 +1,43 @@
+NAME: super_otp
+CATEGORY: crypto
+POINTS: 150
+DOWNLOAD LINK: [http://chal.ctf-league.osusec.org/super_otp.py](http://chal.ctf-league.osusec.org/super_otp.py)
+
+ACCESS: nc chal.ctf-league.osusec.org 22445
+DESCRIPTION: One time pads are a way of encrypting a message in a way that cannot be cracked. I have developed the Super One Time Pad to increase its security!
+Good Luck trying to find the flag!
+
+**Hint! The order something is XORed in doesn’t matter**
+
+**Hint! The below code will output exactly 60 characters**
+
+```bash
+$ python3
+Python 3.9.13 (tags/v3.9.13:6de2ca5, May 17 2022, 16:36:42) [MSC v.1929 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> 'A'*60
+'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+>>>
+```
+
+After inspecting the code it can be seen that the program will ask for three one time pads, and combine them all into a super one time pad. It can also be observed from the source code that the max length of the flag is up to 60 characters. 
+
+The basic premise of a one time pad will XOR the initial message with a key to create a new cipher. One time pad (OTP)s relies on a key to be reversed, and so long as the key isn’t changed, then the message can be decrypted with the said key. 
+
+So, the program will request three inputs from the user, and will run this through three OTPs. To decrypt the final output, the messages will need to be XORed with the key. 
+
+Consider the following:
+
+A ^ B = C
+
+A ^ C = B
+
+Assume: 
+
+A = plaint text message
+
+B= key
+
+C = ciphertext
+
+To decode the final cipher text, all three one time pads will need to be decoded to base64, then all three one time pads will need to be XORed, and compared to the “super” one time pad they will create, along with the flag. XORing all four of these strings will allow the flag to be decoded.
